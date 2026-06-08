@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import './App.css'
 import { getRandomSong } from "./lib.tsx";
 import AudioPlayer from "./AudioPlayer.tsx";
-
-const timeStops = [0, 0.5, 1, 3, 5, 10, 15, 30];
+import { ProgressBar } from './ProgressBar.tsx';
+import { timeStops, timeStopsDurations } from "./static.tsx";
 
 function App() {
   const [song, setSong] = useState<any|undefined>(undefined);
@@ -11,13 +11,13 @@ function App() {
 
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [timeStopIndex, setTimeStopIndex] = useState(0);
+  const timeStopIndex = useRef(-1);
 
   async function fetchSong()
   {
     const randomSong = await getRandomSong();
     setSong(randomSong);
-    setTimeStopIndex(0);
+    timeStopIndex.current = -1;
   }
 
   async function nextSong()
@@ -28,12 +28,21 @@ function App() {
   function handleTimeUpdate()
   {
     if (audioRef.current) {
-      setProgress((audioRef.current.currentTime / audioRef.current.duration) * 100);
+      if (timeStopIndex.current === -1)
+      {
+        return;
+      }
+
+      setProgress(
+        (audioRef.current.currentTime /
+          timeStopsDurations[timeStops.length - 1]) *
+          100,
+      );
     
-      if (audioRef.current.currentTime >= timeStops[timeStopIndex]) {
+      if (audioRef.current.currentTime >= timeStopsDurations[timeStopIndex.current]) {
         changeSongState(false);
 
-        if(timeStopIndex == timeStops.length - 1) {
+        if (timeStopIndex.current == timeStops.length - 1) {
           // TODO: END GAME
         }
       }
@@ -55,18 +64,15 @@ function App() {
 
   function playNextTimeStop()
   {
-    setTimeStopIndex((prev)=>{
-      const newIndex = prev + 1;
+    const newIndex = timeStopIndex.current + 1;
+    if (newIndex >= timeStops.length) {
+      // TODO: END GAME
+      timeStopIndex.current = -1;
+      return;
+    }
 
-      if(newIndex >= timeStops.length) {
-        // TODO: END GAME
-        return 0;
-      }
-
-      console.log(newIndex);
-      return newIndex;
-    });
-    changeSongState(true);
+    timeStopIndex.current = newIndex;
+      changeSongState(true);
   }
 
   useEffect(() => {
@@ -88,20 +94,13 @@ function App() {
               <p>{song.artist}</p>
               <p>{song.releaseDate}</p>
               <p>{song.genre}</p>
-              <div>
                 <button
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                   onClick={() => playNextTimeStop()}
                 >
                   Play
                 </button>
-                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                  <div
-                    className="bg-blue-600 h-2.5 rounded-full"
-                    style={{ width: `${progress}%` }}
-                  ></div>
-                </div>
-              </div>
+              <ProgressBar progress={progress} />
             </div>
           </>
         )}

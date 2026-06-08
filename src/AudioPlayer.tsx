@@ -10,14 +10,23 @@ export default function Audio({
   handleTimeUpdate: () => void;
 }) {
   useEffect(() => {
+    let interval: number;
+
     if (audioRef.current) {
       audioRef.current.load();
+      interval = setInterval(handleTimeUpdate, 10);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
     }
   }, [previewUrl]);
 
   return (
     <div>
-      <audio ref={audioRef} onTimeUpdate={handleTimeUpdate}>
+      <audio ref={audioRef}>
         <source src={previewUrl} type="audio/x-m4a" />
         Your browser does not support the audio element.
       </audio>
