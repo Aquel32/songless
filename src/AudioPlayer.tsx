@@ -1,20 +1,26 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
-export default function Audio({previewUrl}: {previewUrl: string}) {
-    const audioRef = useRef<HTMLAudioElement|null>(null);
+export default function Audio({
+  previewUrl,
+  audioRef,
+  handleTimeUpdate,
+}: {
+  previewUrl: string;
+  audioRef: React.RefObject<HTMLAudioElement | null>;
+  handleTimeUpdate: () => void;
+}) {
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.load();
+    }
+  }, [previewUrl]);
 
-    useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.load();
-        }
-    }, [previewUrl]);
-
-    return (
-      <div>
-        <audio ref={audioRef} controls>
-          <source src={previewUrl} type="audio/x-m4a" />
-          Your browser does not support the audio element.
-        </audio>
-      </div>
-    );
+  return (
+    <div>
+      <audio ref={audioRef} onTimeUpdate={handleTimeUpdate}>
+        <source src={previewUrl} type="audio/x-m4a" />
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  );
 }
