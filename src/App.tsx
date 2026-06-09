@@ -10,19 +10,21 @@ function App() {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [progress, setProgress] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [canPlay, setCanPlay] = useState(false);
   const timeStopIndex = useRef(-1);
 
   async function fetchSong()
   {
     const randomSong = await getRandomSong();
     setSong(randomSong);
-    timeStopIndex.current = -1;
   }
 
   async function nextSong()
   {
     await fetchSong();
+    timeStopIndex.current = -1;
+    setProgress(0);
+    setCanPlay(true);
   }
 
   function handleTimeUpdate()
@@ -43,16 +45,17 @@ function App() {
         changeSongState(false);
 
         if (timeStopIndex.current == timeStops.length - 1) {
-          // TODO: END GAME
+          setCanPlay(false);
+          return;
         }
+
+        setCanPlay(true);
       }
     }
   }
 
   function changeSongState(newState: boolean)
   {
-    setIsPlaying(newState);
-
     if (audioRef.current) {
       if (newState) {
         audioRef.current.play();
@@ -66,13 +69,14 @@ function App() {
   {
     const newIndex = timeStopIndex.current + 1;
     if (newIndex >= timeStops.length) {
-      // TODO: END GAME
+      setCanPlay(false);
       timeStopIndex.current = -1;
       return;
     }
 
     timeStopIndex.current = newIndex;
-      changeSongState(true);
+    changeSongState(true);
+    setCanPlay(false);
   }
 
   useEffect(() => {
@@ -95,7 +99,8 @@ function App() {
               <p>{song.releaseDate}</p>
               <p>{song.genre}</p>
                 <button
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  disabled={!canPlay}
+                  className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-950 text-white font-bold py-2 px-4 rounded"
                   onClick={() => playNextTimeStop()}
                 >
                   Play
