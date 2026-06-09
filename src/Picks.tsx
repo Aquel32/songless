@@ -1,13 +1,11 @@
 import { timeStops } from "./static";
 import type { Song } from "./types";
+import {ChevronDoubleDownIcon} from "@heroicons/react/24/solid";
 
-export function Picks({picks, song}: {picks: (Song|boolean)[], song: Song | undefined})
+export function Picks({picks, song, showCorrect}: {picks: (Song|boolean)[], song: Song | undefined, showCorrect: boolean})
 {
-    
-    function getSongPick(index:number)
+    function getSongPick(pick:Song)
     {
-        const pick = picks[index] as Song;
-
         let isCorrect = false;
 
         if(song)
@@ -42,20 +40,34 @@ export function Picks({picks, song}: {picks: (Song|boolean)[], song: Song | unde
       <>
         <div className="flex flex-col gap-2 w-auto">
           {timeStops.map((stop, index) => (
-            <div key={index} className="h-12 min-w-[400px] flex items-center justify-center gap-4 border-2 border-gray-600 px-8 py-2 relative">
+            <div
+              key={index}
+              className="h-12 min-w-[400px] flex items-center justify-center gap-4 border-2 border-gray-600 px-8 py-2 relative"
+            >
               {index >= picks.length ? (
                 <></>
-              ) : typeof picks[index] === "boolean" ? (<>
-                    <div className={`absolute top-0 left-0 w-full h-full flex items-center justify-center -z-10 bg-gray-500/50`}>
-                        {/* BACKGROUND */}
-                    </div>
-                    <p className="text-gray-400 text-xl">SKIPPED</p>
+              ) : typeof picks[index] === "boolean" ? (
+                <>
+                  <div
+                    className={`absolute top-0 left-0 w-full h-full flex items-center justify-center -z-10 bg-gray-500/50`}
+                  >
+                    {/* BACKGROUND */}
+                  </div>
+                  <p className="text-gray-400 text-xl">SKIPPED</p>
                 </>
               ) : (
-                getSongPick(index)
+                getSongPick(picks[index] as Song)
               )}
             </div>
           ))}
+          {song && showCorrect && typeof picks[picks.length - 1] !== "boolean" && (picks[picks.length - 1] as Song).id !== song.id && (
+                <>
+                <ChevronDoubleDownIcon className="w-6 h-6 text-gray-400 self-center" />
+                <div className="h-12 min-w-[400px] flex items-center justify-center gap-4 border-2 border-gray-600 px-8 py-2 relative">
+                    {getSongPick(song)}
+                </div>
+                </>
+            )}
         </div>
       </>
     );

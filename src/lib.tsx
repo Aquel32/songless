@@ -20,7 +20,7 @@ export async function getRandomSong(): Promise<Song>
 
 async function getArtistSongs(artist: string, limit: number): Promise<any[]>
 {
-    const songsQuery = `https://itunes.apple.com/search?term=${encodeURIComponent(artist)}&media=music&entity=song&attribute=artistTerm&limit=${limit}`;
+    const songsQuery = `https://itunes.apple.com/search?term=${encodeURIComponent(artist)}&media=music&entity=song&attribute=artistTerm&limit=${limit}&country=pl`;
     const response = await fetch(songsQuery);
     const songs = (await response.json()).results;
 
@@ -28,7 +28,7 @@ async function getArtistSongs(artist: string, limit: number): Promise<any[]>
 }
 
 export async function getSongsByTerm(term: string, limit: number): Promise<Song[]> {
-    const songsQuery = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=${limit}`;
+    const songsQuery = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=music&entity=song&limit=${limit}&country=pl`;
     const response = await fetch(songsQuery);
     const songs = (await response.json()).results;
 

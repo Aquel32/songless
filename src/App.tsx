@@ -99,13 +99,14 @@ function App() {
       setCanSkip(false);
       setTimeStopIndex(-1)
       endGame(false);
-      return;
+      return true;
     }
 
     if (addSkippedPick) {
       setPicks([...picks, false]);
     }
     setTimeStopIndex(newIndex);
+    return false;
   }
 
   function checkIfCorrectPick(pick: Song)
@@ -119,8 +120,7 @@ function App() {
 
     if(pick.id !== song.id)
     {
-      playNextTimeStop(false);
-      return false;
+      return playNextTimeStop(false);
     }
 
     endGame(true);
@@ -149,7 +149,7 @@ function App() {
               handleTimeUpdate={handleTimeUpdate}
             />
             <div className="flex flex-col items-center gap-4">
-              <Picks picks={picks} song={song} />
+              <Picks picks={picks} song={song} showCorrect={gameEnded} />
               <ProgressBar
                 progress={progress}
                 timestopIndex={timeStopIndexState}

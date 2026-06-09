@@ -23,7 +23,7 @@ export function Dropdown({onPick,disabled}:{onPick: (pick: Song) => boolean, dis
 
     function handleOptionSelect(option: Song) {
         setIsOpen(false);
-        if(onPick(option))
+        if(onPick(option) === true)
         {
             setOptions([]);
             setSearchTerm("");
