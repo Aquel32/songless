@@ -12,7 +12,8 @@ function App() {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [canSkip, setCanSkip] = useState(false);
-  const timeStopIndex = useRef(0);
+  const timeStopIndexRef = useRef(0);
+  const [timeStopIndexState, setTimeStopIndexState] = useState(0);
 
   async function fetchSong()
   {
@@ -20,10 +21,16 @@ function App() {
     setSong(randomSong);
   }
 
+  function setTimeStopIndex(newIndex: number)
+  {
+    timeStopIndexRef.current = newIndex;
+    setTimeStopIndexState(newIndex);
+  }
+
   async function nextSong()
   {
     await fetchSong();
-    timeStopIndex.current = 0;
+    setTimeStopIndex(0);
     setProgress(0);
     setCanSkip(true);
     setIsPlaying(false);
@@ -32,7 +39,7 @@ function App() {
   function handleTimeUpdate()
   {
     if (audioRef.current) {
-      if (timeStopIndex.current === -1)
+      if (timeStopIndexRef.current === -1)
       {
         return;
       }
@@ -43,10 +50,10 @@ function App() {
           100,
       );
     
-      if (audioRef.current.currentTime >= timeStopsDurations[timeStopIndex.current]) {
+      if (audioRef.current.currentTime >= timeStopsDurations[timeStopIndexRef.current]) {
         changeSongState(false);
 
-        if (timeStopIndex.current == timeStops.length - 1) {
+        if (timeStopIndexRef.current == timeStops.length - 1) {
           setCanSkip(false);
           return;
         }
@@ -60,7 +67,7 @@ function App() {
   {
     if (audioRef.current) {
       if (newState) {
-        if(audioRef.current.currentTime >= timeStopsDurations[timeStopIndex.current]) {
+        if(audioRef.current.currentTime >= timeStopsDurations[timeStopIndexRef.current]) {
           audioRef.current.currentTime = 0;
         }
 
@@ -75,14 +82,19 @@ function App() {
 
   function playNextTimeStop()
   {
-    const newIndex = timeStopIndex.current + 1;
+    const newIndex = timeStopIndexRef.current + 1;
+
+    if(newIndex == timeStops.length - 1) {
+      setCanSkip(false);
+    }
+
     if (newIndex >= timeStops.length) {
       setCanSkip(false);
-      timeStopIndex.current = -1;
+      setTimeStopIndex(-1)
       return;
     }
 
-    timeStopIndex.current = newIndex;
+    setTimeStopIndex(newIndex);
   }
 
   useEffect(() => {
@@ -110,7 +122,7 @@ function App() {
               >
                 {isPlaying ? 'Pause' : 'Play'}
               </button>
-              <ProgressBar progress={progress} />
+              <ProgressBar progress={progress} timestopIndex={timeStopIndexState} />
               <button
                 disabled={!canSkip}
                 className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-950 text-white font-bold py-2 px-4 rounded"
