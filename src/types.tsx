@@ -5,4 +5,5 @@ export type Song = {
     genre: string;
     imageUrl: string;
     previewUrl: string;
+    id: string;
 }

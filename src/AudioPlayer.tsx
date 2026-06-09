@@ -14,6 +14,7 @@ export default function Audio({
 
     if (audioRef.current) {
       audioRef.current.load();
+      audioRef.current.volume = 1;
       interval = setInterval(handleTimeUpdate, 10);
     }
 

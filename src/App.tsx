@@ -6,6 +6,7 @@ import { ProgressBar } from './ProgressBar.tsx';
 import { timeStops, timeStopsDurations } from "./static.tsx";
 import { Picks } from './Picks.tsx';
 import type { Song } from './types.tsx';
+import { Dropdown } from './Dropdown.tsx';
 
 function App() {
   const [song, setSong] = useState<Song | undefined>(undefined);
@@ -37,6 +38,7 @@ function App() {
     setProgress(0);
     setCanSkip(true);
     setIsPlaying(false);
+    setPicks([]);
   }
 
   function handleTimeUpdate()
@@ -83,7 +85,7 @@ function App() {
     }
   }
 
-  function playNextTimeStop()
+  function playNextTimeStop(addSkippedPick = true)
   {
     const newIndex = timeStopIndexRef.current + 1;
 
@@ -97,13 +99,33 @@ function App() {
       return;
     }
 
-    // setPicks([...picks, song!]);
-    setPicks([...picks, false]);
+    if (addSkippedPick) {
+      setPicks([...picks, false]);
+    }
     setTimeStopIndex(newIndex);
   }
 
-  useEffect(() => {
-  }, []);
+  function checkIfCorrectPick(pick: Song)
+  {
+    setPicks([...picks, pick]);
+
+    if(!song)
+    {
+      return;
+    }
+
+    if(pick.id !== song.id)
+    {
+      playNextTimeStop();
+      return;
+    }
+
+    playNextTimeStop(false);
+    setTimeStopIndex(timeStops.length-1);
+    setCanSkip(false);
+    audioRef.current!.volume = 0.2;
+    changeSongState(true);
+  }
 
   return (
     <>
@@ -135,6 +157,7 @@ function App() {
               >
                 Skip
               </button>
+              <Dropdown onPick={checkIfCorrectPick} disabled={!canSkip} />
             </div>
           </>
         )}
