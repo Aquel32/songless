@@ -18,6 +18,7 @@ function App() {
   const timeStopIndexRef = useRef(0);
   const [timeStopIndexState, setTimeStopIndexState] = useState(0);
   const [picks, setPicks] = useState<(Song|boolean)[]>([]);
+  const [gameEnded, setGameEnded] = useState(false);
 
   async function fetchSong()
   {
@@ -39,6 +40,7 @@ function App() {
     setCanSkip(true);
     setIsPlaying(false);
     setPicks([]);
+    setGameEnded(false);
   }
 
   function handleTimeUpdate()
@@ -96,6 +98,7 @@ function App() {
     if (newIndex >= timeStops.length) {
       setCanSkip(false);
       setTimeStopIndex(-1)
+      endGame(false);
       return;
     }
 
@@ -111,17 +114,25 @@ function App() {
 
     if(!song)
     {
-      return;
+      return false;
     }
 
     if(pick.id !== song.id)
     {
-      playNextTimeStop();
-      return;
+      playNextTimeStop(false);
+      return false;
     }
 
+    endGame(true);
+    
+    return true;
+  }
+
+  function endGame(win: boolean)
+  {
+    setGameEnded(true);
     playNextTimeStop(false);
-    setTimeStopIndex(timeStops.length-1);
+    setTimeStopIndex(timeStops.length - 1);
     setCanSkip(false);
     audioRef.current!.volume = 0.2;
     changeSongState(true);
@@ -157,7 +168,7 @@ function App() {
               >
                 Skip
               </button>
-              <Dropdown onPick={checkIfCorrectPick} disabled={!canSkip} />
+              <Dropdown onPick={checkIfCorrectPick} disabled={gameEnded} />
             </div>
           </>
         )}

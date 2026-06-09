@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Song } from "./types";
 import { getSongsByTerm } from "./lib";
 
-export function Dropdown({onPick,disabled}:{onPick: (pick: Song) => void, disabled: boolean}) {
+export function Dropdown({onPick,disabled}:{onPick: (pick: Song) => boolean, disabled: boolean}) {
     const [searchTerm, setSearchTerm] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const [options, setOptions] = useState<Song[]>([]);
@@ -22,9 +22,12 @@ export function Dropdown({onPick,disabled}:{onPick: (pick: Song) => void, disabl
     }
 
     function handleOptionSelect(option: Song) {
-        setSearchTerm("");
         setIsOpen(false);
-        onPick(option);
+        if(onPick(option))
+        {
+            setOptions([]);
+            setSearchTerm("");
+        }
     }
 
     useEffect(() => {
