@@ -10,8 +10,9 @@ function App() {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [progress, setProgress] = useState(0);
-  const [canPlay, setCanPlay] = useState(false);
-  const timeStopIndex = useRef(-1);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [canSkip, setCanSkip] = useState(false);
+  const timeStopIndex = useRef(0);
 
   async function fetchSong()
   {
@@ -22,9 +23,10 @@ function App() {
   async function nextSong()
   {
     await fetchSong();
-    timeStopIndex.current = -1;
+    timeStopIndex.current = 0;
     setProgress(0);
-    setCanPlay(true);
+    setCanSkip(true);
+    setIsPlaying(false);
   }
 
   function handleTimeUpdate()
@@ -45,11 +47,11 @@ function App() {
         changeSongState(false);
 
         if (timeStopIndex.current == timeStops.length - 1) {
-          setCanPlay(false);
+          setCanSkip(false);
           return;
         }
 
-        setCanPlay(true);
+        setCanSkip(true);
       }
     }
   }
@@ -58,9 +60,15 @@ function App() {
   {
     if (audioRef.current) {
       if (newState) {
+        if(audioRef.current.currentTime >= timeStopsDurations[timeStopIndex.current]) {
+          audioRef.current.currentTime = 0;
+        }
+
         audioRef.current.play();
+        setIsPlaying(true);
       } else {
         audioRef.current.pause();
+        setIsPlaying(false);
       }
     }
   }
@@ -69,14 +77,12 @@ function App() {
   {
     const newIndex = timeStopIndex.current + 1;
     if (newIndex >= timeStops.length) {
-      setCanPlay(false);
+      setCanSkip(false);
       timeStopIndex.current = -1;
       return;
     }
 
     timeStopIndex.current = newIndex;
-    changeSongState(true);
-    setCanPlay(false);
   }
 
   useEffect(() => {
@@ -98,14 +104,20 @@ function App() {
               <p>{song.artist}</p>
               <p>{song.releaseDate}</p>
               <p>{song.genre}</p>
-                <button
-                  disabled={!canPlay}
-                  className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-950 text-white font-bold py-2 px-4 rounded"
-                  onClick={() => playNextTimeStop()}
-                >
-                  Play
-                </button>
+              <button
+                className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-950 text-white font-bold py-2 px-4 rounded"
+                onClick={() => changeSongState(!isPlaying)}
+              >
+                {isPlaying ? 'Pause' : 'Play'}
+              </button>
               <ProgressBar progress={progress} />
+              <button
+                disabled={!canSkip}
+                className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-950 text-white font-bold py-2 px-4 rounded"
+                onClick={() => playNextTimeStop()}
+              >
+                Skip
+              </button>
             </div>
           </>
         )}

@@ -3,7 +3,7 @@ import { ARTIST } from "./static";
 export async function getRandomSong()
 {
     const randomArtist = ARTIST[Math.floor(Math.random() * ARTIST.length)];
-    const songs = await getArtistSongs(randomArtist, 10);
+    const songs = await getArtistSongs(randomArtist, 30);
     const randomSong = songs[Math.floor(Math.random() * songs.length)];
 
     return {

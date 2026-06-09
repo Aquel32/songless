@@ -1,9 +1,10 @@
 export const ARTIST = [
-    "Ken Carson",
+    // "Ken Carson",
     // "Destroy Lonely",
     // "Playboi Carti",
     // "Lil Uzi Vert",
     // "Trippie Redd",
+    "Bedoes 2115"
 ]
 
 // export const timeStops = [0.5, 1, 3, 5, 10, 15];
