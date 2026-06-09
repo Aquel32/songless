@@ -10,7 +10,7 @@ export function Picks({picks, song, showCorrect}: {picks: (Song|boolean)[], song
 
         if(song)
         {
-            isCorrect = pick.artist === song.artist;
+            isCorrect = pick.id === song.id;
         }
 
         return (
@@ -39,7 +39,7 @@ export function Picks({picks, song, showCorrect}: {picks: (Song|boolean)[], song
     return (
       <>
         <div className="flex flex-col gap-2 w-auto">
-          {timeStops.map((stop, index) => (
+          {timeStops.map((_,index) => (
             <div
               key={index}
               className="h-12 min-w-[400px] flex items-center justify-center gap-4 border-2 border-gray-600 px-8 py-2 relative"

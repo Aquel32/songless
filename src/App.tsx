@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
 import './App.css'
+import { useRef, useState } from 'react';
 import { getRandomSong } from "./lib.tsx";
 import AudioPlayer from "./AudioPlayer.tsx";
 import { ProgressBar } from './ProgressBar.tsx';
@@ -98,7 +98,7 @@ function App() {
     if (newIndex >= timeStops.length) {
       setCanSkip(false);
       setTimeStopIndex(-1)
-      endGame(false);
+      endGame(); // LOSE
       return true;
     }
 
@@ -123,12 +123,12 @@ function App() {
       return playNextTimeStop(false);
     }
 
-    endGame(true);
+    endGame(); // WIN
     
     return true;
   }
 
-  function endGame(win: boolean)
+  function endGame()
   {
     setGameEnded(true);
     playNextTimeStop(false);
