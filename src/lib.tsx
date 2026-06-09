@@ -1,6 +1,7 @@
 import { ARTIST } from "./static";
+import type { Song } from "./types";
 
-export async function getRandomSong()
+export async function getRandomSong(): Promise<Song>
 {
     const randomArtist = ARTIST[Math.floor(Math.random() * ARTIST.length)];
     const songs = await getArtistSongs(randomArtist, 30);
@@ -16,7 +17,7 @@ export async function getRandomSong()
     };
 }
 
-async function getArtistSongs(artist: string, limit: number)
+async function getArtistSongs(artist: string, limit: number): Promise<any[]>
 {
     const songsQuery = `https://itunes.apple.com/search?term=${encodeURIComponent(artist)}&media=music&entity=song&attribute=artistTerm&limit=${limit}`;
     const response = await fetch(songsQuery);

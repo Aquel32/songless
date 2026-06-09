@@ -4,9 +4,11 @@ import { getRandomSong } from "./lib.tsx";
 import AudioPlayer from "./AudioPlayer.tsx";
 import { ProgressBar } from './ProgressBar.tsx';
 import { timeStops, timeStopsDurations } from "./static.tsx";
+import { Picks } from './Picks.tsx';
+import type { Song } from './types.tsx';
 
 function App() {
-  const [song, setSong] = useState<any|undefined>(undefined);
+  const [song, setSong] = useState<Song | undefined>(undefined);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [progress, setProgress] = useState(0);
@@ -14,6 +16,7 @@ function App() {
   const [canSkip, setCanSkip] = useState(false);
   const timeStopIndexRef = useRef(0);
   const [timeStopIndexState, setTimeStopIndexState] = useState(0);
+  const [picks, setPicks] = useState<(Song|boolean)[]>([]);
 
   async function fetchSong()
   {
@@ -94,6 +97,8 @@ function App() {
       return;
     }
 
+    // setPicks([...picks, song!]);
+    setPicks([...picks, false]);
     setTimeStopIndex(newIndex);
   }
 
@@ -111,18 +116,18 @@ function App() {
               handleTimeUpdate={handleTimeUpdate}
             />
             <div className="flex flex-col items-center gap-4">
-              <img src={song.imageUrl} alt={song.title} />
-              <h2>{song.title}</h2>
-              <p>{song.artist}</p>
-              <p>{song.releaseDate}</p>
-              <p>{song.genre}</p>
+              <Picks picks={picks} song={song} />
+              <ProgressBar
+                progress={progress}
+                timestopIndex={timeStopIndexState}
+              />
               <button
                 className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-950 text-white font-bold py-2 px-4 rounded"
                 onClick={() => changeSongState(!isPlaying)}
               >
-                {isPlaying ? 'Pause' : 'Play'}
+                {isPlaying ? "Pause" : "Play"}
               </button>
-              <ProgressBar progress={progress} timestopIndex={timeStopIndexState} />
+
               <button
                 disabled={!canSkip}
                 className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-950 text-white font-bold py-2 px-4 rounded"
