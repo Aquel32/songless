@@ -6,16 +6,30 @@ export function Picks({picks, song, showCorrect}: {picks: (Song|boolean)[], song
 {
     function getSongPick(pick:Song)
     {
-        let isCorrect = false;
+        let finalColor = 'bg-red-500/50';
 
         if(song)
         {
-            isCorrect = pick.id === song.id;
+          console.log(pick, song);
+
+          if(song.artist.includes(pick.artist) || pick.artist.includes(song.artist) || song.title.split(" ").some(word => pick.artist.includes(word)) || pick.artist.split(" ").some(word => song.artist.includes(word)))
+          {
+            finalColor = 'bg-orange-500/50';
+          }
+
+          if(pick.album === song.album)
+          {
+            finalColor = 'bg-yellow-500/50';
+          }
+
+          if (pick.id === song.id) {
+            finalColor = "bg-green-500/50";
+          }
         }
 
         return (
           <>
-            <div className={`absolute top-0 left-0 w-full h-full flex items-center justify-center -z-10 ${isCorrect ? 'bg-green-500/50' : 'bg-red-500/50'}`}>
+            <div className={`absolute top-0 left-0 w-full h-full flex items-center justify-center -z-10 ${finalColor}`}>
               {/* BACKGROUND */}
             </div>
             <img

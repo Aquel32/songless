@@ -6,4 +6,5 @@ export type Song = {
     imageUrl: string;
     previewUrl: string;
     id: string;
+    album: string;
 }

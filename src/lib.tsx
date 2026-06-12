@@ -15,6 +15,7 @@ export async function getRandomSong(): Promise<Song>
       releaseDate: randomSong.releaseDate,
       genre: randomSong.primaryGenreName,
       id: randomSong.trackId,
+      album: randomSong.collectionName,
     };
 }
 
@@ -40,5 +41,6 @@ export async function getSongsByTerm(term: string, limit: number): Promise<Song[
       releaseDate: song.releaseDate,
       genre: song.primaryGenreName,
       id: song.trackId,
+      album: song.collectionName,
     }));
 }
