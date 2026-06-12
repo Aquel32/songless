@@ -7,6 +7,7 @@ import { timeStops, timeStopsDurations } from "./static.tsx";
 import { Picks } from './Picks.tsx';
 import type { Song } from './types.tsx';
 import { Dropdown } from './Dropdown.tsx';
+import { PlayCircleIcon, StopCircleIcon } from '@heroicons/react/24/solid';
 
 function App() {
   const [song, setSong] = useState<Song | undefined>(undefined);
@@ -154,39 +155,45 @@ function App() {
 
   return (
     <>
-      <div>
-        {error && (
-          <div className="p-4 text-red-500">{error}</div>
-        )}
+      {song && (
+        <AudioPlayer
+          previewUrl={song.previewUrl}
+          audioRef={audioRef}
+          handleTimeUpdate={handleTimeUpdate}
+        />
+      )}
+
+      <div className="h-screen flex flex-col items-center justify-between py-5">
+        {error && <div className="p-4 text-red-500">{error}</div>}
 
         {song && (
           <>
-            <AudioPlayer
-              previewUrl={song.previewUrl}
-              audioRef={audioRef}
-              handleTimeUpdate={handleTimeUpdate}
-            />
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-4 w-full">
               <Picks picks={picks} song={song} showCorrect={gameEnded} />
               <ProgressBar
                 progress={progress}
                 timestopIndex={timeStopIndexState}
               />
               <button
-                className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-950 text-white font-bold py-2 px-4 rounded"
+                className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-950 text-white font-bold py-2 px-4 rounded-full"
                 onClick={() => changeSongState(!isPlaying)}
               >
-                {isPlaying ? "Pause" : "Play"}
+                {isPlaying ? (
+                  <StopCircleIcon className="w-5 h-5" />
+                ) : (
+                  <PlayCircleIcon className="w-5 h-5" />
+                )}
               </button>
 
-              <button
-                disabled={!canSkip}
-                className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-950 text-white font-bold py-2 px-4 rounded"
-                onClick={() => playNextTimeStop()}
-              >
-                Skip
-              </button>
-              <Dropdown onPick={checkIfCorrectPick} disabled={gameEnded} />
+              <Dropdown onPick={checkIfCorrectPick} disabled={gameEnded}>
+                <button
+                  disabled={!canSkip}
+                  className="bg-blue-500 hover:bg-blue-700 disabled:bg-blue-950 text-white font-bold py-2 px-4 rounded"
+                  onClick={() => playNextTimeStop()}
+                >
+                  Skip
+                </button>
+              </Dropdown>
             </div>
           </>
         )}

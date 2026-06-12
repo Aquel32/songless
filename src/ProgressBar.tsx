@@ -7,7 +7,7 @@ export function ProgressBar({ progress, timestopIndex }: { progress: number, tim
   }, [timestopIndex]);
   
   return (
-    <div className="w-[60%] h-10 bg-slate-700 my-20 relative">
+    <div className="w-[60%] h-10 bg-slate-700 my-5 relative">
       <div
         className="bg-blue-500 h-full"
         style={{ width: `${progress}%` }}

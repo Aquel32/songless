@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Song } from "./types";
 import { getSongsByTerm } from "./lib";
 
-export function Dropdown({onPick,disabled}:{onPick: (pick: Song) => boolean, disabled: boolean}) {
+export function Dropdown({onPick,disabled, children}:{onPick: (pick: Song) => boolean, disabled: boolean, children: React.ReactNode}) {
     const [searchTerm, setSearchTerm] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const [options, setOptions] = useState<Song[]>([]);
@@ -52,18 +52,21 @@ export function Dropdown({onPick,disabled}:{onPick: (pick: Song) => boolean, dis
 
     return (
       <div className="w-1/2 relative">
-        <input
-          type="text"
-          placeholder="Search for a song..."
-          className="w-full p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={searchTerm}
-          onChange={(e) => updateSearchTerm(e.target.value)}
-          onFocus={() => setIsOpen(true)}
-          disabled={disabled}
-        />
+        <div className="w-full flex gap-2">
+          <input
+            type="text"
+            placeholder="Search for a song..."
+            className="w-full p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={searchTerm}
+            onChange={(e) => updateSearchTerm(e.target.value)}
+            onFocus={() => setIsOpen(true)}
+            disabled={disabled}
+            />
+          {children}
+        </div>
 
         {(isOpen && !disabled) && (
-          <div ref={dropdownRef} className="w-full h-[400px] overflow-y-auto absolute bg-[var(--bg)] z-20">
+          <div ref={dropdownRef} className="w-full max-h-[300px] overflow-y-auto absolute bg-[var(--bg)] z-20 my-2">
             {error && (
               <div className="p-4 text-red-500">{error}</div>
             )}
