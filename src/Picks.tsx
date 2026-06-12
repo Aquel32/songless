@@ -10,8 +10,6 @@ export function Picks({picks, song, showCorrect}: {picks: (Song|boolean)[], song
 
         if(song)
         {
-          console.log(pick, song);
-
           if(song.artist.includes(pick.artist) || pick.artist.includes(song.artist) || song.title.split(" ").some(word => pick.artist.includes(word)) || pick.artist.split(" ").some(word => song.artist.includes(word)))
           {
             finalColor = 'bg-orange-500/50';

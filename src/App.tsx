@@ -19,11 +19,21 @@ function App() {
   const [timeStopIndexState, setTimeStopIndexState] = useState(0);
   const [picks, setPicks] = useState<(Song|boolean)[]>([]);
   const [gameEnded, setGameEnded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function fetchSong()
   {
     const randomSong = await getRandomSong();
+
+    if(!randomSong)
+    {
+      setError("Failed to fetch a song, please wait.");
+      return false;
+    }
+
+    setError(null);
     setSong(randomSong);
+    return true;
   }
 
   function setTimeStopIndex(newIndex: number)
@@ -34,7 +44,11 @@ function App() {
 
   async function nextSong()
   {
-    await fetchSong();
+    if(!(await fetchSong()))
+    {
+      return;
+    }
+
     setTimeStopIndex(0);
     setProgress(0);
     setCanSkip(true);
@@ -141,6 +155,10 @@ function App() {
   return (
     <>
       <div>
+        {error && (
+          <div className="p-4 text-red-500">{error}</div>
+        )}
+
         {song && (
           <>
             <AudioPlayer

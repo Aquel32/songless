@@ -6,6 +6,7 @@ export function Dropdown({onPick,disabled}:{onPick: (pick: Song) => boolean, dis
     const [searchTerm, setSearchTerm] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const [options, setOptions] = useState<Song[]>([]);
+    const [error, setError] = useState<string | null>(null);
 
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -18,6 +19,14 @@ export function Dropdown({onPick,disabled}:{onPick: (pick: Song) => boolean, dis
         }
 
         const foundSongs = await getSongsByTerm(term, 10);
+        
+        if(!foundSongs)
+        {
+          setError("Failed to fetch songs, please wait.");
+          return;
+        }
+
+        setError(null);
         setOptions(foundSongs);
     }
 
@@ -55,6 +64,12 @@ export function Dropdown({onPick,disabled}:{onPick: (pick: Song) => boolean, dis
 
         {(isOpen && !disabled) && (
           <div ref={dropdownRef} className="w-full h-[400px] overflow-y-auto absolute bg-[var(--bg)] z-20">
+            {error && (
+              <div className="p-4 text-red-500">{error}</div>
+            )}
+            {options.length === 0 && !error && (
+              <div className="p-4 text-gray-500">No songs found.</div>
+            )}
             {options.map((option, index) => (
               <div
                 key={index}
